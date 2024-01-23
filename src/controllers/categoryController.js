@@ -1,10 +1,30 @@
-const router = require("express").Router();
-const Category = require("./src/models/Category"); 
+const { Router } = require("express");
+const router = Router();
+const { cloudinary } = require("../config/cloudinary");
+const productService = require("../services/categoryService");
+const Category = require("../models/Category"); 
+
+// Testing
+router.get("/rand", async (req, res) =>{
+    try
+    {
+        const jsonObject = {
+            id: "01234567",
+            name: "Sahar",
+            age: "Test",
+          };
+        res.status(201).json(jsonObject);
+    }
+    catch (e)
+    {
+        res.status(404).json({message : e.message});
+    }
+});
 
 // {Post} request for add new category.
-router.post("/category", async (req, res) => {
+router.post("/addCategory", async (req, res) => {
   try {
-    const { category_Name, image, path } = req.body;
+    const { category_Name, image, path } = req.query;
     const newCategory = new Category({
       category_Name,
       image,
@@ -22,7 +42,7 @@ router.get("/categories", async (req, res) => {
   try {
     const categories = await Category.find();
     res.json(categories);
-  } catch(e) {
+  } catch(e) { 
     res.status(500).json({ message: e.message });
   }
 });

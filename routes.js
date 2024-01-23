@@ -3,9 +3,9 @@ const authController = require("./src/controllers/authController");
 const productController = require("./src/controllers/productController");
 const userController = require("./src/controllers/userController");
 const messageController = require("./src/controllers/messageController");
+const categoryController = require("./src/controllers/categoryController");
 const isAuth = require("./src/middlewares/isAuth");
 const { getRandomProducts } = require("./src/services/productService");
-const categoryRoutes = require("./categoryRoutes");
 
 router.get("/", (req, res) => {
   res.send("Server is running ▶️");
@@ -20,7 +20,7 @@ router.get("/random", async (req, res) => {
   }
 });
 
-router.use("/categoryRoutes", categoryRoutes);
+router.use("/category", categoryController);
 router.use("/auth", authController);
 router.use("/products", productController);
 router.use("/user", userController);
