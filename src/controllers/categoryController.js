@@ -4,23 +4,6 @@ const { cloudinary } = require("../config/cloudinary");
 const productService = require("../services/categoryService");
 const Category = require("../models/Category"); 
 
-// Testing
-router.get("/rand", async (req, res) =>{
-    try
-    {
-        const jsonObject = {
-            id: "01234567",
-            name: "Sahar",
-            age: "Test",
-          };
-        res.status(201).json(jsonObject);
-    }
-    catch (e)
-    {
-        res.status(404).json({message : e.message});
-    }
-});
-
 // {Post} request for add new category.
 router.post("/addCategory", async (req, res) => {
   try {
