@@ -1,20 +1,34 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
-  id : mongoose.Types.ObjectId,
-
-  category_Name : {
-    type : String,
+  category_Name: 
+  {
+    type: String,
+    minlength: 3,
+    maxlength: 50,
     required: true,
+    unique: true,
   },
 
-  image : {
-    type : String,
+  image: 
+  {
+    type: String,
+    minlength: 3,
+    maxlength: 50,
+    required: true,
+    unique: true,
   },
-
-  path : { 
-    type : String,
+  
+  path: 
+  {
+    type: String,
+    minlength: 3,
+    maxlength: 50,
+    required: true,
+    unique: true,
   },
 });
 
-module.exports = mongoose.model("Category", categorySchema);
+const Category = mongoose.model('Category', categorySchema);
+
+module.exports = Category;
