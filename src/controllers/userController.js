@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 router.post('/create', async (req, res) => {
   try {
-    const newUser = new User(req.body);
+    const newUser = new User(req.query);
     await newUser.save();
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
@@ -39,15 +39,15 @@ router.delete('/delete/:userId', async (req, res) => {
 });
 
 router.get('/search', async (req, res) => {
-  const { username, email } = req.query;
+  const { name, email } = req.query;
   const searchCriteria = {};
 
-  if (username) {
-    searchCriteria.username = new RegExp(username, 'i'); // Case-insensitive username search
+  if (name) {
+    searchCriteria.username = new RegExp(name, 'i');
   }
 
   if (email) {
-    searchCriteria.email = new RegExp(email, 'i'); // Case-insensitive email search
+    searchCriteria.email = new RegExp(email, 'i');
   }
 
   try {
@@ -60,30 +60,6 @@ router.get('/search', async (req, res) => {
 });
 
 module.exports = router;
-
-
-module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
