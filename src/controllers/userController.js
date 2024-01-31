@@ -3,7 +3,7 @@ const router = Router();
 const { cloudinary } = require("../config/cloudinary");
 const User = require("../models/User");
 // const isAuth = require('../middlewares/isAuth')
-const productService = require("../services/productService");
+const productService = require("../services/ticketService");
 const userService = require("../services/userService");
 
 router.patch("/edit-profile/:id", async (req, res) => {
