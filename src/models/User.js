@@ -4,7 +4,7 @@ const { SALT } = require("../config/config");
 
 const userSchema = new mongoose.Schema({
   id: mongoose.Types.ObjectId,
-  name: {
+  username: {
     type: String,
     trim: true,
     required: "Please fill a name. It can be your real one or a username.",
