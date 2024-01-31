@@ -21,7 +21,7 @@ router.post("/addCategory", async (req, res) => {
 });
 
 // {Get} request for all categories.
-router.get("/categories", async (req, res) => {
+router.get("/getAllCategories", async (req, res) => {
   try {
     const categories = await Category.find();
     res.json(categories);
