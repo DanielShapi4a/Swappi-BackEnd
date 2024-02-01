@@ -23,12 +23,12 @@ async function registerUser(userData) {
   return await user.save();
 }
 
-async function loginUser({ email, password }) {
+async function loginUser(email, password ) {
   let user = await User.findOne({ email });
-  if (!user) throw { message: "Invalid email or password" };
+  if (!user) throw { message: "Invalid email" };
 
   let hasValidPass = await bcrypt.compare(password, user.password);
-  if (!hasValidPass) throw { message: "Invalid email or password" };
+  if (!hasValidPass) throw { message: "Invalid password" };
 
   let token = jwt.sign(
     {
