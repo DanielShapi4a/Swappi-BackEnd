@@ -19,12 +19,12 @@ router.post("/register", async (req, res) => {
 
 // Login and generate JWT
 router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.query;
-
+  try { 
+    
+    const { email, password } = req.body;
+  
     // Find user by email
     const user = await User.findOne({ email });
-
     // Check if user exists
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
