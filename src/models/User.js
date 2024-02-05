@@ -7,15 +7,15 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
-    required: "Please fill a name. It can be your real one or a username.",
+    required: "Please fill a username. It can be your real one or a username.",
   },
   email: {
     type: String,
     trim: true,
     lowercase: true,
     unique: true,
-    required: "Email address is required",
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Please fill a valid email address"],
+    required: "Email address is required",
   },
   password: {
     type: String,
@@ -26,8 +26,8 @@ const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     trim: true,
-    required: ["Phone number is required"],
     match: [/^05[023489]-?\d{3}-?\d{4}$/, "Please fill a valid phone number"],
+    required: ["Phone number is required"],
   },
   gender: {
     type: String,
@@ -41,13 +41,13 @@ const userSchema = new mongoose.Schema({
   createdSells: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+      ref: "Ticket",
     },
   ],
   wishedProducts: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+      ref: "Ticket",
     },
   ],
   chatRooms: [
