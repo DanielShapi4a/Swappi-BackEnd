@@ -13,6 +13,21 @@ const User = require('../models/User');
 //   }
 // });
 
+
+// Dont Delete this is VERRRY IMPORTANT! :)
+router.get('/getUserById/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.put('/edit/:userId', async (req, res) => {
   const userId = req.params.userId;
   const updateFields = req.body;

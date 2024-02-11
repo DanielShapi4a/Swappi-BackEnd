@@ -5,9 +5,10 @@ const User = require("../models/User");
 
 const router = express.Router();
 
+//sahar register function
 router.post("/register", async (req, res) => {
   try {
-    const newUser = new User(req.query);
+    const newUser = new User(req.body);
     await newUser.save();
     res.status(201).json({ message: 'User created successfully', user: newUser });
     } catch (error) {
@@ -16,8 +17,62 @@ router.post("/register", async (req, res) => {
     }
 });
 
+// daniel register function -> there is a bug with the schema i think because it cant find the existing
+// router.post("/register", async (req, res) => {
+//   try {
+//     // Log the email received in the request body
+//     console.log('Received email:', req.body.email);
 
-// Login and generate JWT
+//     // Check if the email already exists
+//     const existingUser = await User.findOne({ email: req.body.email });
+//     console.log('Existing user:', existingUser); // Log the existing user
+
+//     if (existingUser) {
+//       return res.status(400).json({ message: 'Email is already registered' });
+//     }
+
+//     // Email is not registered, proceed with creating the new user
+//     const newUser = new User(req.body);
+//     await newUser.save();
+//     res.status(201).json({ message: 'User created successfully', user: newUser });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+// Login and generate JWT - Sahar
+// router.post("/login", async (req, res) => {
+//   try { 
+    
+//     const { email, password } = req.body;
+  
+//     // Find user by email
+//     const user = await User.findOne({ email });
+//     // Check if user exists
+//     if (!user) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     // Check password
+//     const isPasswordValid = await bcrypt.compare(password, user.password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     // Generate JWT token
+//     const token = jwt.sign({ userId: user._id }, "your_secret_key", {
+//       expiresIn: "1h", // Token expiration time
+//     });
+
+//     res.status(200).json({ token });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+//Login and generate JWT + Send User data 
 router.post("/login", async (req, res) => {
   try { 
     
@@ -41,7 +96,11 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h", // Token expiration time
     });
 
-    res.status(200).json({ token });
+    const refreshToken = jwt.sign({ userId: user._id }, "your_refresh_key", {
+      expiresIn: "1d", // Token expiration time
+    });
+
+    res.status(200).json({ accessToken, refreshToken, user });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
