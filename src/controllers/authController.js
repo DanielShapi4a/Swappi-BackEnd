@@ -10,11 +10,11 @@ router.post("/register", async (req, res) => {
   try {
     const newUser = new User(req.body);
     await newUser.save();
-    res.status(201).json({ message: 'User created successfully', user: newUser });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: error.message });
-    }
+    res.status(201).json({ message: "User created successfully", user: newUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // daniel register function -> there is a bug with the schema i think because it cant find the existing
@@ -43,10 +43,10 @@ router.post("/register", async (req, res) => {
 
 // Login and generate JWT - Sahar
 // router.post("/login", async (req, res) => {
-//   try { 
-    
+//   try {
+
 //     const { email, password } = req.body;
-  
+
 //     // Find user by email
 //     const user = await User.findOne({ email });
 //     // Check if user exists
@@ -71,13 +71,13 @@ router.post("/register", async (req, res) => {
 //   }
 // });
 
-
-//Login and generate JWT + Send User data 
+//Login and generate JWT + Send User data
 router.post("/login", async (req, res) => {
-  try { 
+  
+  try {
     
     const { email, password } = req.body;
-  
+
     // Find user by email
     const user = await User.findOne({ email });
     // Check if user exists
@@ -92,7 +92,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, "your_secret_key", {
+    const accessToken = jwt.sign({ userId: user._id }, "your_secret_key", {
       expiresIn: "1h", // Token expiration time
     });
 
@@ -107,10 +107,6 @@ router.post("/login", async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-
 
 // const router = require("express").Router();
 // const authService = require("../services/authService");
