@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: "Please fill a username. It can be your real one or a username.",
+    minlength: 3,
+    maxlength: 20,
+    match: [/^[A-Za-z0-9]{3,20}$/, "Some characters are not allowed to use in the username, try another username."],
   },
   email: {
     type: String,
@@ -22,12 +25,13 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: ["Password is required"],
     minlength: [8, "Password should be at least 8 characters long"],
+    maxlength: [16, "Password length can not be more then 16 characters."],
+    match: [/^[^\s\\/]{8,16}$/, "Some characters are not allowed to use in the password, try another password."],
   },
   phoneNumber: {
     type: String,
     trim: true,
     match: [/^05[023489]-?\d{3}-?\d{4}$/, "Please fill a valid phone number"],
-    required: ["Phone number is required"],
   },
   gender: {
     type: String,

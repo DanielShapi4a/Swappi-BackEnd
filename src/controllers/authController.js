@@ -1,21 +1,128 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-
+const fs = require('fs');
+const path = require('path');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 
-//sahar register function
+// Read the private key from the file
+const privateKeyPath = path.join(__dirname, '..', 'keys', 'private_key.pem');
+const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+
+// Login function
+router.post("/login", async (req, res) => {
+  try { 
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Check password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Calculate expiration time for 1 hour from now
+    const expiresInOneHour = Math.floor(Date.now() / 1000) + (60 * 60);
+
+    // Generate JWT token
+    const accessToken = jwt.sign({ userId: user._id }, privateKey, {
+      algorithm: 'RS256',
+      expiresIn: expiresInOneHour
+    });
+
+    // Generate refresh token
+    const refreshToken = jwt.sign({ userId: user._id }, privateKey, {
+      algorithm: 'RS256',
+      expiresIn: expiresInOneHour
+    });
+
+    res.status(200).json({ accessToken, refreshToken, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// Password strength validation function
+function isPasswordStrong(password) {
+  // Ensuring the password is not too simple like '12345678'
+    // At least one lowercase letter
+    // At least one uppercase letter
+    // At least one digit 
+    // A minimum of 8 characters
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  return regex.test(password);
+}
+
 router.post("/register", async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json({ message: 'User created successfully', user: newUser });
-    } catch (error) {
+      const { name, email, password, gender } = req.body;
+
+      // Validate password strength
+      if (!isPasswordStrong(password)) {
+          return res.status(400).json({ error: "Password is not strong enough" });
+      }
+
+      // Check if email already exists
+      const userExists = await User.findOne({ email });
+      if (userExists) {
+          return res.status(409).json({ error: "Email already in use" });
+      }
+
+      // Create new user
+      const user = new User({
+          name,
+          email,
+          password,
+          gender,
+      });
+
+      await user.save();
+
+      res.status(201).json({ message: "User created successfully", userId: user._id });
+  } catch (error) {
       console.error(error);
-      res.status(500).json({ message: error.message });
-    }
+      res.status(500).json({ error: "Internal server error" });
+  }
 });
+
+router.post('/validate-token', (req, res) => {
+  const { token } = req.body;
+
+  jwt.verify(token, privateKey, (err, decoded) => {
+      if (err) {
+          // Token is invalid or expired
+          return res.status(401).json({ valid: false, message: 'Token is invalid or expired' });
+      }
+      // Token is valid
+      res.status(200).json({ valid: true, message: 'Token is valid', userId: decoded.userId });
+  });
+});
+
+module.exports = router;
+
+
+
+
+    // For refresh token, you can use the same or a different private key
+//     const refreshToken = jwt.sign({ userId: user._id }, privateKey, {
+//       algorithm: 'RS256',
+//       expiresIn: expiresInOneHour
+//     });
+
+//     res.status(200).json({ accessToken, refreshToken, user });
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 // daniel register function -> there is a bug with the schema i think because it cant find the existing
 // router.post("/register", async (req, res) => {
@@ -41,7 +148,7 @@ router.post("/register", async (req, res) => {
 //   }
 // });
 
-// Login and generate JWT - Sahar
+//Login and generate JWT + Send User data 
 // router.post("/login", async (req, res) => {
 //   try { 
     
@@ -65,48 +172,16 @@ router.post("/register", async (req, res) => {
 //       expiresIn: "1h", // Token expiration time
 //     });
 
-//     res.status(200).json({ token });
+//     const refreshToken = jwt.sign({ userId: user._id }, "your_refresh_key", {
+//       expiresIn: "1d", // Token expiration time
+//     });
+
+//     res.status(200).json({ accessToken, refreshToken, user });
 //   } catch (error) {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // });
 
-
-//Login and generate JWT + Send User data 
-router.post("/login", async (req, res) => {
-  try { 
-    
-    const { email, password } = req.body;
-  
-    // Find user by email
-    const user = await User.findOne({ email });
-    // Check if user exists
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, "your_secret_key", {
-      expiresIn: "1h", // Token expiration time
-    });
-
-    const refreshToken = jwt.sign({ userId: user._id }, "your_refresh_key", {
-      expiresIn: "1d", // Token expiration time
-    });
-
-    res.status(200).json({ accessToken, refreshToken, user });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-module.exports = router;
 
 
 
@@ -168,5 +243,3 @@ module.exports = router;
 //     res.status(200).json({ message: "Not logged in" });
 //   }
 // });
-
-// module.exports = router;

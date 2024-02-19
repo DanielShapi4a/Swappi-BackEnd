@@ -8,6 +8,7 @@ const categoryController = require("./src/controllers/categoryController");
 const isAuth = require("./src/middlewares/isAuth");
 const { getRandomProducts } = require("./src/services/ticketService");
 
+
 router.get("/", (req, res) => {
   res.send("Server is running ▶️");
 });
