@@ -8,7 +8,6 @@ const categoryController = require("./src/controllers/categoryController");
 const isAuth = require("./src/middlewares/isAuth");
 const { getRandomProducts } = require("./src/services/ticketService");
 
-
 router.get("/", (req, res) => {
   res.send("Server is running ▶️");
 });
@@ -22,10 +21,74 @@ router.get("/random", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ *  tags:
+ *    name: Routes.js FILE
+ *    description: root endpoints.
+ * 
+ * /categories:
+ *   get:
+ *     tags: [Routes.js FILE]
+ *     summary: Route to categories.
+ *     description: Route to display all categories.
+ */
 router.use("/categories", categoryController);
+
+/**
+ * @swagger
+ *  tags:
+ *    name: Routes.js FILE
+ *    description: root endpoints.
+ * 
+ * /auth:
+ *   get:
+ *     tags: [Routes.js FILE]
+ *     summary: Auth route
+ *     description: Authentication to the website.
+ */
 router.use("/auth", authController);
+
+/**
+ * @swagger
+ *   tags:
+ *    name: Routes.js FILE
+ *    description: root endpoints.
+ * 
+ * /tickets:
+ *   get:
+ *     tags: [Routes.js FILE]
+ *     summary: All tickets page router.
+ *     description: All tickets page router.
+ */
 router.use("/tickets", ticketController);
+
+/**
+ * @swagger
+ *  tags:
+ *    name: Routes.js FILE
+ *    description: root endpoints.
+ *  
+ * /users:
+ *   get:
+ *     tags: [Routes.js FILE]
+ *     summary: User router for requests.
+ *     description: User router for requests.
+ */
 router.use("/users", userController);
+
+/**
+ * @swagger
+ *  tags:
+ *    name: Routes.js FILE
+ *    description: root endpoints.
+ * 
+ * /messages:
+ *   get:
+ *     tags: [Routes.js FILE]
+ *     summary: Messages page router.
+ *     description: Messages page router.
+ */
 router.use("/messages", messageController);
 
 module.exports = router;

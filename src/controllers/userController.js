@@ -13,7 +13,28 @@ const User = require('../models/User');
 //   }
 // });
 
-
+/**
+ * @swagger
+ * /getUserById/{id}:
+ *   get:
+ *     tags: [User Management]
+ *     summary: Get user by ID
+ *     description: Fetch a single user by their unique identifier.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Unique ID of the user to retrieve.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User data retrieved successfully.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error.
+ */
 // Dont Delete this is VERRRY IMPORTANT! :)
 router.get('/getUserById/:id', async (req, res) => {
   try {
@@ -28,6 +49,38 @@ router.get('/getUserById/:id', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /edit/{userId}:
+ *   put:
+ *     tags: [User Management]
+ *     summary: Edit user details
+ *     description: Update the details of an existing user.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: Unique ID of the user to update.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               // Add other fields as necessary
+ *     responses:
+ *       200:
+ *         description: User updated successfully.
+ *       500:
+ *         description: Internal Server Error.
+ */
 router.put('/edit/:userId', async (req, res) => {
   const userId = req.params.userId;
   const updateFields = req.body;
@@ -41,6 +94,26 @@ router.put('/edit/:userId', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /delete/{userId}:
+ *   delete:
+ *     tags: [User Management]
+ *     summary: Delete a user
+ *     description: Remove a user from the system by their ID.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: Unique ID of the user to delete.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully.
+ *       500:
+ *         description: Internal Server Error.
+ */
 router.delete('/delete/:userId', async (req, res) => {
   const userId = req.params.userId;
 
@@ -53,6 +126,32 @@ router.delete('/delete/:userId', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /search:
+ *   get:
+ *     tags: [User Management]
+ *     summary: Search for users
+ *     description: Search for users by name and/or email.
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: false
+ *         description: Part of or full name to search for.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: email
+ *         required: false
+ *         description: Part of or full email to search for.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Search results matching criteria.
+ *       500:
+ *         description: Internal Server Error.
+ */
 router.get('/search', async (req, res) => {
   const { name, email } = req.query;
   const searchCriteria = {};
