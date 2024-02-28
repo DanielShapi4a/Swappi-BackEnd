@@ -246,10 +246,10 @@ module.exports = router;
 
 //Login and generate JWT + Send User data 
 // router.post("/login", async (req, res) => {
-//   try { 
-    
+//   try {
+
 //     const { email, password } = req.body;
-  
+
 //     // Find user by email
 //     const user = await User.findOne({ email });
 //     // Check if user exists
