@@ -289,7 +289,7 @@ const validateToken = async (req, res, next) => {
 // GET endpoint to fetch user data
 router.get('/getUser', validateToken, async (req, res) => {
   try {
-      const userId = req.user.userId; // Or the relevant field from the token
+      const userId = req.user.userId;
       const user = await User.findById(userId).select('-password');
 
       if (!user) {
