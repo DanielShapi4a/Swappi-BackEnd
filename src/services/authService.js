@@ -2,8 +2,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../config/config");
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs');
 
 // Read the private key from the file
 const privateKeyPath = path.join(__dirname, '..', 'keys', 'private_key.pem');
