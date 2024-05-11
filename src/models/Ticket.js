@@ -1,70 +1,59 @@
 const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
 
 const productSchema = new mongoose.Schema({
-  _id: mongoose.Types.ObjectId, // Match the field name with "_id"
   title: {
     type: String,
-    required: ["Title is required"],
+    required: [true, "Title is required."],
     trim: true,
     minlength: [3, "Title should be at least 3 characters long"],
-    maxlength: [50, "Title can't be more than 50 characters long"], // Corrected typo
+    maxlength: [50, "Title cannot be more than 50 characters long"],
   },
   category: {
     type: String,
-    required: ["Category is required"],
-    validate: {
-      validator: function (v) {
-        return v !== "Choose..."; // Use !== instead of !=
-      },
-      message: "Please choose a category", // Corrected typo
-    },
+    required: [true, "Category is required."],
   },
   description: {
     type: String,
     trim: true,
-    required: ["Description is required"],
+    required: [true, "Description is required."],
     minlength: [10, "Description should be at least 10 characters long"],
-    maxlength: [1000, "Description should be max 1000 characters long"], // Corrected max length
+    maxlength: [1000, "Description can't exceed 1000 characters long"],
   },
   price: {
     type: Number,
-    required: true,
-    trim: true,
+    required: [true, "Price is required."]
   },
-  city: {
+  location: {
     type: String,
-    required: ["City is required"],
+    required: [true, "Location is required."],
     trim: true,
   },
   image: {
     type: String,
-    required: true,
   },
-  pdf: {
-    type: String,
-    required: true,
+  eventDateTime: {
+    type: Date,
+    required: [true, "Event date and time are required."]
   },
   addedAt: {
     type: Date,
-    required: true,
+    default: Date.now,
+    required: [true, "Added date is required."]
   },
   seller: {
     type: mongoose.Types.ObjectId,
     ref: "User",
+    required: [true, "Seller information is required."]
   },
-  likes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  // ticketPDF: {
+  //   type: 
+  // },
   active: {
     type: Boolean,
     default: true,
   },
 });
 
-productSchema.plugin(mongoosePaginate);
+productSchema.index({ eventDateTime: 1, location: 1, seller: 1, title: 1, category: 1 }, { unique: true });
 
 module.exports = mongoose.model("Ticket", productSchema);

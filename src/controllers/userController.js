@@ -15,27 +15,36 @@ const User = require('../models/User');
 
 /**
  * @swagger
+ * tags:
+ *   - name: UserManagement
+ *     description: User management related endpoints.
+ */
+
+/**
+ * @swagger
  * /getUserById/{id}:
  *   get:
- *     tags: [User Management]
  *     summary: Get user by ID
- *     description: Fetch a single user by their unique identifier.
+ *     description: Get a user by their ID.
+ *     tags:
+ *       - UserManagement
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: Unique ID of the user to retrieve.
+ *         description: User ID
  *         schema:
  *           type: string
  *     responses:
- *       200:
- *         description: User data retrieved successfully.
- *       404:
- *         description: User not found.
- *       500:
- *         description: Internal server error.
+ *       '200':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       '404':
+ *         description: User not found
  */
-// Dont Delete this is VERRRY IMPORTANT! :)
 router.get('/getUserById/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -53,7 +62,8 @@ router.get('/getUserById/:id', async (req, res) => {
  * @swagger
  * /edit/{userId}:
  *   put:
- *     tags: [User Management]
+ *     tags:
+ *       - UserManagement
  *     summary: Edit user details
  *     description: Update the details of an existing user.
  *     parameters:
@@ -74,7 +84,6 @@ router.get('/getUserById/:id', async (req, res) => {
  *                 type: string
  *               email:
  *                 type: string
- *               // Add other fields as necessary
  *     responses:
  *       200:
  *         description: User updated successfully.
@@ -98,7 +107,8 @@ router.put('/edit/:userId', async (req, res) => {
  * @swagger
  * /delete/{userId}:
  *   delete:
- *     tags: [User Management]
+ *     tags:
+ *       - UserManagement
  *     summary: Delete a user
  *     description: Remove a user from the system by their ID.
  *     parameters:
@@ -130,7 +140,8 @@ router.delete('/delete/:userId', async (req, res) => {
  * @swagger
  * /search:
  *   get:
- *     tags: [User Management]
+ *     tags:
+ *       - UserManagement
  *     summary: Search for users
  *     description: Search for users by name and/or email.
  *     parameters:
@@ -173,14 +184,21 @@ router.get('/search', async (req, res) => {
   }
 });
 
-
 /**
  * @swagger
  * /updateUser:
- *   post:
+ *   put:
  *     summary: Update user profile
  *     description: Allows authenticated users to update their profile information.
- *     tags: [User Management]
+ *     tags:
+ *       - UserManagement
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         description: Unique ID of the user to update.
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -211,10 +229,9 @@ router.get('/search', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-// Update user fields.
-router.post('/updateUser', async (req, res) => {
+router.put('/updateUser/:userId', async (req, res) => {
   try {
-      const userId = req.user.userId; // Assuming you have the user ID from the authenticated user
+      const userId = req.params.userId; 
       const { email, name, password, phoneNumber, gender } = req.body;
 
       const user = await User.findById(userId);

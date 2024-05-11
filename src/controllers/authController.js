@@ -26,8 +26,8 @@ const publicKeyString = getPublicKey(privateKey);
 /**
  * @swagger
  * tags:
- *   name: Authentication
- *   description: Authentication related endpoints.
+ *   - name: Authentication
+ *     description: Authentication related endpoints.
  */
 
 
@@ -36,7 +36,8 @@ const publicKeyString = getPublicKey(privateKey);
  * @swagger
  * /login:
  *   post:
- *     tags: [Authentication]
+ *     tags:
+ *       - Authentication
  *     summary: User login
  *     description: Authenticates a user using email and password.
  *     requestBody:
@@ -77,7 +78,6 @@ const publicKeyString = getPublicKey(privateKey);
  *       401:
  *         description: Invalid credentials.
  */
-// Login Method
 router.post("/login", async (req, res) => {
   try { 
     const { email, password } = req.body;
@@ -141,11 +141,13 @@ function isPasswordStrong(password) {
   return regex.test(password);
 }
 
+
 /**
  * @swagger
  * /register:
  *   post:
- *     tags: [Authentication]
+ *     tags:
+ *       - Authentication
  *     summary: User registration
  *     description: Registers a new user with name, email, password, and gender.
  *     requestBody:
@@ -185,7 +187,6 @@ function isPasswordStrong(password) {
  *       409:
  *         description: Email already in use.
  */
-// Register Method
 router.post("/register", async (req, res) => {
   try {
       const { name, email, password, gender } = req.body;
@@ -222,7 +223,8 @@ router.post("/register", async (req, res) => {
  * @swagger
  * /logout:
  *   post:
- *     tags: [Authentication]
+ *     tags:
+ *       - Authentication
  *     summary: User logout
  *     description: Logout user and clear his cookies.
  *     requestBody:
@@ -238,7 +240,6 @@ router.post("/register", async (req, res) => {
  *       200:
  *         description: User logged out successfully.
  */
-// Logout Method
 router.get("/logout", (req, res) => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
@@ -266,27 +267,32 @@ const validateToken = async (req, res, next) => {
 /**
  * @swagger
  * /getUser:
- *   post:
- *     tags: [Authentication]
+ *   get:
+ *     tags:
+ *       - Authentication
  *     summary: Receive the cookie and return the relevant user object.
  *     description: Receive the cookie and return the relevant user object.
- *     requestBody: Cookies
- *       required: true
- *         application/json:
- *             type: object
- *             required:
- *               - AccessToken
- *               - RefreshToken
+ *     parameters:
+ *       - in: cookie
+ *         name: accessToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: token
+ *       - in: cookie
+ *         name: refreshToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: token
  *     responses:
  *       200:
- *         OK (with user object)
+ *         description: OK (with user object)
  *       404:
- *         User not found.
- *       500: 
- *         Error fetching user data.
- * 
+ *         description: User not found.
+ *       500:
+ *         description: Error fetching user data.
  */
-// GET endpoint to fetch user data
 router.get('/getUser', validateToken, async (req, res) => {
   try {
       const userId = req.user.userId;
