@@ -8,12 +8,14 @@ const cookieParser = require('cookie-parser');
 const NodeRSA = require('node-rsa');
 const router = express.Router();
 
+
 // Initialize cookie-parser middleware
 router.use(cookieParser());
 
 // Read the private key from the file
 const privateKeyPath = path.join(__dirname, '..', 'keys', 'private_key.pem');
 const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+const { tokenValidation, getUser } = require("../services/authService");
 
 // Function to generate public key from private key
 const getPublicKey = (privateKey) => {
@@ -244,6 +246,19 @@ router.get("/logout", (req, res) => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
   res.status(200).send("Logged out successfully");  
+});
+
+router.get("/loggedIn", async (req, res) => {
+  try {
+    const token = req.cookies.accessToken;
+    if (!token) return res.json(false);
+    const decodedToken = jwt.verify(token, privateKey);
+    const userId = decodedToken.userId;
+    const user = await getUser(userId);
+    res.send(user);
+  } catch (err) {
+    res.json(false);
+  }
 });
 
 // Middleware to validate token
