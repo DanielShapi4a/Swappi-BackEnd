@@ -8,6 +8,30 @@ const upload = multer({ storage: storage });
 
 /**
  * @swagger
+ * /:
+ *   get:
+ *     summary: Get all available tickets
+ *     description: Get all available tickets.
+ *     responses:
+ *       200:
+ *         description: Successfully displaying all available tickets from the Data Base.
+ *       500:
+ *         description: Error saving the ticket.
+ */
+router.get("/", async (req, res) => {
+  try {
+    const tickets = await Ticket.find();
+    const ticketIds = tickets.map(ticket => ticket._id);
+
+    res.status(200).json({ ticketIds });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+/**
+ * @swagger
  * /createNewTicket/{userId}:
  *   post:
  *     summary: Create a new ticket
