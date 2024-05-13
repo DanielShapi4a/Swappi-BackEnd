@@ -7,26 +7,30 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
-    required: "Please fill a name. It can be your real one or a username.",
+    required: "Please fill a username. It can be your real one or a username.",
+    minlength: 3,
+    maxlength: 20,
+    match: [/^[A-Za-z0-9]{3,20}$/, "Some characters are not allowed to use in the username, try another username."],
   },
   email: {
     type: String,
     trim: true,
     lowercase: true,
     unique: true,
-    required: "Email address is required",
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Please fill a valid email address"],
+    required: "Email address is required",
   },
   password: {
     type: String,
     trim: true,
     required: ["Password is required"],
     minlength: [8, "Password should be at least 8 characters long"],
+    maxlength: [16, "Password length can not be more then 16 characters."],
+    match: [/^[^\s\\/]{8,16}$/, "Some characters are not allowed to use in the password, try another password."],
   },
   phoneNumber: {
     type: String,
     trim: true,
-    required: ["Phone number is required"],
     match: [/^05[023489]-?\d{3}-?\d{4}$/, "Please fill a valid phone number"],
   },
   gender: {
@@ -41,13 +45,13 @@ const userSchema = new mongoose.Schema({
   createdSells: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+      ref: "Ticket",
     },
   ],
   wishedProducts: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+      ref: "Ticket",
     },
   ],
   chatRooms: [
