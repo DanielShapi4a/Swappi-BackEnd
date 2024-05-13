@@ -1,3 +1,4 @@
 .env
 keys/
 node_modules/
+private_key.pem
