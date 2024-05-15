@@ -1,4 +1,4 @@
 .env
 src/keys/
 node_modules/
-private_key.pem
+src/keys/private_key.pem
