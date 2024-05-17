@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const Ticket = require("../models/Ticket");
-const multer  = require('multer')
+const multer = require("multer");
 const Upload = require("../models/Upload");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -21,10 +21,9 @@ const upload = multer({ storage: storage });
 router.get("/", async (req, res) => {
   try {
     const tickets = await Ticket.find();
-    const ticketIds = tickets.map(ticket => ticket._id);
+    const ticketIds = tickets.map((ticket) => ticket._id);
 
     res.status(200).json({ ticketIds });
-    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -72,26 +71,34 @@ router.get("/", async (req, res) => {
  */
 router.post("/createNewTicket/:id", async (req, res) => {
   try {
-    const { title, category, description, price, location, eventDateTime } = req.body;
+    const { title, category, description, price, location, eventDateTime } = req.body.data;
+
     const seller = req.params.id; // Use the extracted user ID
 
-    const existingTicket = await Ticket.findOne({ title, category, description, price, location, eventDateTime, seller});
+    const existingTicket = await Ticket.findOne({
+      title,
+      category,
+      description,
+      price,
+      location,
+      eventDateTime,
+      seller,
+    });
     if (existingTicket) {
-      return res.status(409).send('A similar ticket already exists.');
+      return res.status(409).send("A similar ticket already exists.");
     }
 
     const newTicket = new Ticket({
-      ...req.body,
+      ...req.body.data,
       price: parseFloat(price), // Convert price to a number
-      seller: seller // Set the seller to the extracted user ID
+      seller: seller, // Set the seller to the extracted user ID
     });
 
     await newTicket.save();
     res.status(201).json(newTicket);
-      
   } catch (error) {
     console.error(error); // Log the error for debugging
-    res.status(500).send('Error saving the ticket: ' + error.message); // Send a more informative error message
+    res.status(500).send("Error saving the ticket: " + error.message); // Send a more informative error message
   }
 });
 
@@ -168,10 +175,9 @@ router.get("/ticketsByCategory/:categoryName", async (req, res) => {
   try {
     const { categoryName } = req.params;
     const tickets = await Ticket.find({ category: categoryName });
-    const ticketIds = tickets.map(ticket => ticket._id);
+    const ticketIds = tickets.map((ticket) => ticket._id);
 
     res.json({ ticketIds });
-    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -253,7 +259,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     if (!req.file) {
       res.json({
         success: false,
-        message: "You must provide at least 1 file"
+        message: "You must provide at least 1 file",
       });
     } else {
       // Check if fileName is provided in the request body
@@ -264,9 +270,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       let imageUploadObject = {
         file: {
           data: req.file.buffer,
-          contentType: req.file.mimetype
+          contentType: req.file.mimetype,
         },
-        fileName: req.body.fileName
+        fileName: req.body.fileName,
       };
       const uploadObject = new Upload(imageUploadObject);
       // saving the object into the database
@@ -280,8 +286,6 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 });
 
 module.exports = router;
-
-
 
 // **************************************************** //
 //                   PREVIOUS CODE                      //
