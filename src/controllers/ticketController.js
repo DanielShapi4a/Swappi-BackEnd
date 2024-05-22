@@ -285,6 +285,23 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+// DONT DELETE THIS! IF YOU DO MAKE SURE THIS FEATURE WORKS ON THE FRONT-END
+router.get("/getTicketsByUser/:userID", async (req, res) => {
+  try {
+    const userID = req.params.userID;
+    console.log("userID:", userID);
+    const tickets = await Ticket.find({"seller": userID});
+    if (!tickets) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    console.log("Current Tickets:",tickets);
+    res.status(200).json(tickets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
 
 // **************************************************** //

@@ -1,4 +1,6 @@
 const express = require('express');
+const multer = require('multer');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('../models/User');
 
@@ -229,34 +231,87 @@ router.get('/search', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.put('/updateUser/:userId', async (req, res) => {
+// router.put('/updateUser/:userId', async (req, res) => {
+//   try {
+//       console.log("@@@@@@@@@");
+//       console.log(req);
+
+//       const userId = req.params.userId; 
+//       const { email, name, password, phoneNumber, gender } = req.body;
+
+//       const user = await User.findById(userId);
+//       if (!user) {
+//           return res.status(404).json({ message: 'User not found' });
+//       }
+
+//       // Update fields
+//       if (email) user.email = email;
+//       if (name) user.name = name;
+//       if (phoneNumber) user.phoneNumber = phoneNumber;
+//       if (gender) user.gender = gender;
+
+//       // Handle password change with care
+//       if (password) {
+//           const salt = await bcrypt.genSalt(10);
+//           user.password = await bcrypt.hash(password, salt);
+//       }
+
+//       await user.save();
+
+//       res.status(200).json({ message: 'User updated successfully' });
+//   } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+// Use multer to handle multipart/form-data
+const upload = multer();
+
+router.put('/updateUser/:userId', upload.none(), async (req, res) => {
   try {
-      const userId = req.params.userId; 
-      const { email, name, password, phoneNumber, gender } = req.body;
+    console.log("@@@@@@@@@");
+    console.log(req.body.userData);
 
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+    const userId = req.params.userId;
+    const userData = req.body.userData;
+    if (!userData) {
+      return res.status(400).json({ message: 'User data is missing' });
+    }
+
+    const parsedUserData = JSON.parse(userData);
+    const { email, name, currentPassword, newPassword, confirmNewPassword, phoneNumber, gender } = parsedUserData;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update fields
+    if (email) user.email = email;
+    if (name) user.name = name;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (gender) user.gender = gender;
+
+    // Handle password change with care
+    if (currentPassword && newPassword && confirmNewPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      console.log("is matched:",isMatch);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
       }
-
-      // Update fields
-      if (email) user.email = email;
-      if (name) user.name = name;
-      if (phoneNumber) user.phoneNumber = phoneNumber;
-      if (gender) user.gender = gender;
-
-      // Handle password change with care
-      if (password) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(password, salt);
+      if (newPassword !== confirmNewPassword) {
+        return res.status(400).json({ message: 'New passwords do not match' });
       }
+      user.password = newPassword
+    }
 
-      await user.save();
+    await user.save();
 
-      res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({ message: 'User updated successfully' });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
