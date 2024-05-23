@@ -104,6 +104,67 @@ router.post("/createNewTicket/:id", async (req, res) => {
 
 /**
  * @swagger
+ * /updateTicket/{ticketID}:
+ *   post:
+ *     summary: Edit an existing ticket
+ *     description: Edit an existing ticket with provided details.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eventDateTime:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The date and time of the event for the ticket.
+ *               location:
+ *                 type: string
+ *                 description: The location of the event for the ticket.
+ *               title:
+ *                 type: string
+ *                 description: The title of the ticket.
+ *               category:
+ *                 type: string
+ *                 description: The category of the ticket.
+ *     responses:
+ *       201:
+ *         description: Successfully editted a ticket.
+ *         schema:
+ *           $ref: '#/definitions/Ticket'
+ *       500:
+ *         description: Error edditing the ticket.
+ */
+router.put("/updateTicket/:ticketId", async (req, res) => {
+  try {
+    const { title, category, description, price, location, eventDateTime, seller } = req.body.data;
+    const ticketId = req.params.ticketId; 
+
+    const existingTicket = await Ticket.findById(ticketId);
+
+    if (existingTicket) {
+      existingTicket.title = title;
+      existingTicket.category = category;
+      existingTicket.description = description;
+      existingTicket.price = price;
+      existingTicket.location = location;
+      existingTicket.eventDateTime = eventDateTime;
+      existingTicket.seller = seller;
+    }
+
+    await existingTicket.save();
+    res.status(201).send("Ticket Editted Successfully");
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.status(500).send("Error saving the ticket: " + error.message); // Send a more informative error message
+  }
+});
+
+/**
+ * @swagger
  * /tickets/deleteTicket/{ticketId}:
  *   delete:
  *     summary: Delete a ticket by ID
