@@ -204,6 +204,63 @@ router.delete("/deleteTicket/:ticketId", async (req, res) => {
 
 /**
  * @swagger
+ * /tickets/search:
+ *   post:
+ *     summary: Search for tickets based on a search string.
+ *     description: Returns a list of tickets that match the search string in the title, description, location, or category fields.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               q:
+ *                 type: string
+ *                 description: The search string to match against ticket fields.
+ *     responses:
+ *       200:
+ *         description: A list of tickets that match the search string.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Ticket'
+ *       400:
+ *         description: Bad request. The request body is missing the search query.
+ *       500:
+ *         description: An error occurred while searching for tickets.
+ */
+router.get('/search', async (req, res) => {
+  const searchString = req.query.q;
+  console.log("the search string is:",searchString);
+  
+  if (!searchString) {
+    return res.status(400).json({ error: 'Search query is required.' });
+  }
+
+  try {
+    const tickets = await Ticket.find({
+      active: true,
+      $or: [                                                           // The $or operator is used to join query clauses with a logical OR
+        { title: { $regex: searchString, $options: 'i' } },            // $regex to match the searchString
+        { description: { $regex: searchString, $options: 'i' } },      // $options: 'i' - case-insensitive whether the characters are uppercase or lowercase
+        { location: { $regex: searchString, $options: 'i' } },
+        { category: { $regex: searchString, $options: 'i' } }
+      ]
+    });
+
+    console.log(tickets);
+    res.json(tickets);
+
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred while searching for tickets.' });
+  }
+});
+
+/**
+ * @swagger
  * /tickets/ticketsByCategory/{category}:
  *   get:
  *     summary: Get tickets by category
