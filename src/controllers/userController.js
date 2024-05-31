@@ -266,6 +266,86 @@ router.get('/search', async (req, res) => {
 // });
 
 // Use multer to handle multipart/form-data
+
+/**
+ * @swagger
+ * /updateUser/{userId}:
+ *   put:
+ *     tags:
+ *       - UserManagement
+ *     summary: Edit user details
+ *     description: Update the details of an existing user. If the password fields are provided, the password will be updated; otherwise, only non-password fields will be updated.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: Unique ID of the user to update.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The new name of the user.
+ *               email:
+ *                 type: string
+ *                 description: The new email of the user.
+ *               currentPassword:
+ *                 type: string
+ *                 description: The current password of the user (required for password change).
+ *               newPassword:
+ *                 type: string
+ *                 description: The new password of the user (required for password change).
+ *               confirmNewPassword:
+ *                 type: string
+ *                 description: Confirmation of the new password (required for password change).
+ *               phoneNumber:
+ *                 type: string
+ *                 description: The new phone number of the user.
+ *               gender:
+ *                 type: string
+ *                 description: The new gender of the user.
+ *     responses:
+ *       200:
+ *         description: User updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the success of the update operation.
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request. Either the user data is missing or the provided passwords do not match.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the cause of the bad request.
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating that the specified user was not found.
+ *       500:
+ *         description: Internal Server Error.
+ */
 const upload = multer();
 
 router.put('/updateUser/:userId', upload.none(), async (req, res) => {
@@ -280,35 +360,35 @@ router.put('/updateUser/:userId', upload.none(), async (req, res) => {
     }
 
     const parsedUserData = JSON.parse(userData);
-    const { email, name, currentPassword, newPassword, confirmNewPassword, phoneNumber, gender } = parsedUserData;
+    const { email, name, currentPassword, newPassword, confirmNewPassword, phoneNumber, gender, password } = parsedUserData;
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     // Update fields
-    if (email) user.email = email;
-    if (name) user.name = name;
-    if (phoneNumber) user.phoneNumber = phoneNumber;
-    if (gender) user.gender = gender;
+    let updateFields = {};
+    if (email) updateFields.email = email;
+    if (name) updateFields.name = name;
+    if (phoneNumber) updateFields.phoneNumber = phoneNumber;
+    if (gender) updateFields.gender = gender;
 
     // Handle password change with care
     if (currentPassword && newPassword && confirmNewPassword) {
       const isMatch = await bcrypt.compare(currentPassword, user.password);
-      console.log("is matched:",isMatch);
       if (!isMatch) {
         return res.status(400).json({ message: 'Current password is incorrect' });
       }
       if (newPassword !== confirmNewPassword) {
         return res.status(400).json({ message: 'New passwords do not match' });
       }
-      user.password = newPassword
+      updateFields.password = newPassword;
+      user.password = newPassword;
     }
 
-    await user.save();
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true });
 
-    res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({ message: 'User updated successfully', user: updatedUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
