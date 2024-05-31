@@ -420,6 +420,32 @@ router.get("/getTicketsByUser/:userID", async (req, res) => {
   }
 });
 
+
+router.put('/buyTicket/:ticketId', async (req, res) => { // userId, TicketId
+  const userId = req.body.userId;
+  const ticketId = req.params.ticketId;
+
+  try {
+    const updateTicket = await Ticket.findById(ticketId);
+    updateTicket.seller = userId;
+    updateTicket.active = false;
+    const updatedTicket = await Ticket.findByIdAndUpdate(ticketId, updateTicket, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updateTicket) {
+      return res.status(404).json({ error: 'Ticket not found.'});
+    }
+    res.json(updatedTicket);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while buying the ticket.' });
+  }
+
+});
+
+
+
 module.exports = router;
 
 // **************************************************** //
