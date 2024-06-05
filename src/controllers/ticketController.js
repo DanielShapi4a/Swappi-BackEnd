@@ -12,6 +12,8 @@ const upload = multer({ storage: storage });
  *   get:
  *     summary: Get all available tickets
  *     description: Get all available tickets.
+ *     tags:
+ *       - TicketManagement
  *     responses:
  *       200:
  *         description: Successfully displaying all available tickets from the Data Base.
@@ -29,6 +31,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 /**
  * @swagger
  * /createNewTicket/{userId}:
@@ -36,7 +39,7 @@ router.get("/", async (req, res) => {
  *     summary: Create a new ticket
  *     description: Create a new ticket with provided details.
  *     tags:
- *       - Authentication
+ *       - TicketManagement
  *     requestBody:
  *       required: true
  *       content:
@@ -207,7 +210,9 @@ router.delete("/deleteTicket/:ticketId", async (req, res) => {
  * /tickets/search:
  *   post:
  *     summary: Search for tickets based on a search string.
- *     description: Returns a list of tickets that match the search string in the title, description, location, or category fields.
+ *     description: Returns a list of tickets that match the search string in the title, description, location, or category fields.\
+ *     tags:
+ *       - TicketManagement
  *     requestBody:
  *       required: true
  *       content:
@@ -348,6 +353,8 @@ router.get("/getTicket/:ticketId", async (req, res) => {
  * /upload:
  *   post:
  *     summary: Uploads an image or PDF file
+ *     tags:
+ *       - TicketManagement
  *     requestBody:
  *       required: true
  *       content:
@@ -426,6 +433,8 @@ router.get("/getTicketsByUser/:userID", async (req, res) => {
  *   put:
  *     summary: Updates the ticket to mark it as sold and assigns a new owner
  *     description: Marks a ticket as sold by updating the seller field to the new owner's ID and sets the ticket as inactive.
+ *     tags:
+ *       - TicketManagement
  *     parameters:
  *       - in: path
  *         name: ticketId
