@@ -19,7 +19,7 @@ http.listen(PORT, () => console.log(`Server is running at http://localhost:${POR
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'Your API',
+    title: 'Swappi API',
     version: '1.0.0',
     description: 'API documentation using Swagger',
   },
