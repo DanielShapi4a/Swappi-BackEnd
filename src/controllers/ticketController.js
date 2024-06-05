@@ -420,7 +420,48 @@ router.get("/getTicketsByUser/:userID", async (req, res) => {
   }
 });
 
-
+/**
+ * @swagger
+ * /buyTicket/{ticketId}:
+ *   put:
+ *     summary: Updates the ticket to mark it as sold and assigns a new owner
+ *     description: Marks a ticket as sold by updating the seller field to the new owner's ID and sets the ticket as inactive.
+ *     parameters:
+ *       - in: path
+ *         name: ticketId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the ticket to be updated
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: The ID of the user who is buying the ticket
+ *     responses:
+ *       '200':
+ *         description: Ticket successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 seller:
+ *                   type: string
+ *                 active:
+ *                   type: boolean
+ *       '404':
+ *         description: Ticket not found
+ *       '500':
+ *         description: Server error occurred while processing the request
+ */
 router.put('/buyTicket/:ticketId', async (req, res) => { // userId, TicketId
   const userId = req.body.userId;
   const ticketId = req.params.ticketId;
