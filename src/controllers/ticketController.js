@@ -168,7 +168,7 @@ router.put("/updateTicket/:ticketId", async (req, res) => {
 
 /**
  * @swagger
- * /tickets/deleteTicket/{ticketId}:
+ * /deleteTicket/{ticketId}:
  *   delete:
  *     summary: Delete a ticket by ID
  *     description: Deletes a ticket from the database by its ID.
@@ -207,7 +207,7 @@ router.delete("/deleteTicket/:ticketId", async (req, res) => {
 
 /**
  * @swagger
- * /tickets/search:
+ * /search:
  *   post:
  *     summary: Search for tickets based on a search string.
  *     description: Returns a list of tickets that match the search string in the title, description, location, or category fields.\
@@ -266,7 +266,7 @@ router.get('/search', async (req, res) => {
 
 /**
  * @swagger
- * /tickets/ticketsByCategory/{category}:
+ * /ticketsByCategory/{category}:
  *   get:
  *     summary: Get tickets by category
  *     description: Retrieve all ticket IDs under a specific category.
@@ -309,7 +309,7 @@ router.get("/ticketsByCategory/:categoryName", async (req, res) => {
 
 /**
  * @swagger
- * /tickets/getTicket/{ticketId}:
+ * /getTicket/{ticketId}:
  *   get:
  *     summary: Get ticket by ID
  *     description: Retrieve a ticket from the database by its ID.
@@ -410,7 +410,51 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-// DONT DELETE THIS! IF YOU DO MAKE SURE THIS FEATURE WORKS ON THE FRONT-END
+/**
+ * @swagger
+ * /getTicketsByUser/{userID}:
+ *   get:
+ *     tags:
+ *       - TicketManagement
+ *     summary: Retrieve all tickets associated with a specific user
+ *     description: Fetches tickets from the database where the 'seller' field matches the provided userID. Useful for viewing all tickets listed by a specific user.
+ *     parameters:
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID of the ticket seller
+ *     responses:
+ *       200:
+ *         description: An array of tickets sold by the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Ticket'
+ *       404:
+ *         description: No tickets found for the user ID provided.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
+ */
 router.get("/getTicketsByUser/:userID", async (req, res) => {
   try {
     const userID = req.params.userID;
